@@ -1,21 +1,25 @@
-package org.example.dndPersonsServer;
+package org.example.dndPersonsServer.Servicies;
 
+import org.example.dndPersonsServer.Characteristics;
+import org.example.dndPersonsServer.Dices;
+import org.example.dndPersonsServer.Models.Creature;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 
 @Service
-public class PersonActionsService {
+public class CreatureActionsService {
 
-    public void attackAction(Person who, Person whom){
+    public static Creature[] attackAction(Creature who, Creature whom){
         int result = Dices.D20.roll();
         result+=who.getCharacteristicModifier(Characteristics.DEXTERITY);
         if(whom.getArmorClass()<=result){
             whom.setCurrentHealthPoints(whom.getCurrentHealthPoints()-(Dices.D6.roll()+who.getCharacteristicModifier(Characteristics.STRENGTH)));
         }
+        return new Creature[]{who,whom};
     }
 
-    public void useItem(Person who, String itemName){
+    public static Creature useItemAction(Creature who, String itemName){
         HashMap<String, Integer> tempInventory = who.getInventory();
         if(tempInventory.get(itemName)>1){
             int tempAmount = tempInventory.remove(itemName);
@@ -26,7 +30,7 @@ public class PersonActionsService {
 
         }
         if(tempInventory.get(itemName)==1){
-            int tempAmount = tempInventory.remove(itemName);
+            tempInventory.remove(itemName);
             who.setInventory(tempInventory);
 
 
@@ -34,6 +38,7 @@ public class PersonActionsService {
         if(tempInventory.get(itemName)<1){
             throw new IllegalArgumentException();
         }
+        return who;
     }
 
 
